@@ -1,2 +1,0 @@
-# khoizyyjustice
-vui ve thui
