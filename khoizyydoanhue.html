@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>khoizyy - Tra Cứu & So Sánh Món Ngon Xứ Huế</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        khoizyy: {
+                            50: '#f8f6fc',
+                            100: '#f0ebfa',
+                            200: '#e1d4f7',
+                            300: '#ceb6f2',
+                            400: '#b48eea',
+                            500: '#9b64e0',
+                            600: '#8c3aff',
+                            700: '#7a25e6',
+                            800: '#621cb8',
+                            900: '#2b2342',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        serifHeading: ['Playfair Display', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f6f3fc;
+            color: #2b2342;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Stylized Imperial City Background Layer */
+        .hue-imperial-bg {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(to bottom, rgba(246, 243, 252, 0.72), rgba(246, 243, 252, 0.92)), 
+                              url('https://images.unsplash.com/photo-1569383746724-6f1b882b8f46?w=1600&auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 0;
+            filter: contrast(102%) brightness(102%);
+        }
+
+        /* Dreamy Glowing Ambient Radial Orbs */
+        .ambient-orb-1 {
+            position: fixed;
+            top: -10%;
+            left: 10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(206, 182, 242, 0.5) 0%, rgba(248, 246, 252, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb-2 {
+            position: fixed;
+            top: 25%;
+            right: -5%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(240, 190, 245, 0.45) 0%, rgba(248, 246, 252, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-orb-3 {
+            position: fixed;
+            bottom: -10%;
+            left: 30%;
+            width: 650px;
+            height: 650px;
+            background: radial-gradient(circle, rgba(180, 200, 255, 0.4) 0%, rgba(248, 246, 252, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.88);
+            box-shadow: 0 10px 32px -8px rgba(140, 98, 224, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 8px 24px -6px rgba(120, 80, 220, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px -8px rgba(140, 58, 255, 0.2);
+            border-color: rgba(206, 182, 242, 0.95);
+        }
+
+        .glass-nav {
+            background: rgba(246, 243, 252, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+        }
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Custom Slider Range */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type="range"]:focus {
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #e1d4f7;
+            border-radius: 999px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: #8c3aff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 12px rgba(140, 58, 255, 0.5);
+            border: 3px solid #ffffff;
+            transition: transform 0.15s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+        }
+
+        .tag-pill {
+            background: rgba(140, 58, 255, 0.08);
+            border: 1px solid rgba(140, 58, 255, 0.18);
+            color: #7a25e6;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0ebfa;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ceb6f2;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8c3aff;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col justify-between min-h-screen">
+
+    <!-- Stylized Imperial City Background Layer -->
+    <div class="hue-imperial-bg"></div>
+    <div class="ambient-orb-1"></div>
+    <div class="ambient-orb-2"></div>
+    <div class="ambient-orb-3"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Header Navbar -->
+    <header class="sticky top-0 z-40 glass-nav px-4 md:px-12 py-4 transition-all">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-khoizyy-400 via-khoizyy-600 to-khoizyy-800 flex items-center justify-center text-white shadow-md shadow-khoizyy-500/20">
+                    <i class="fa-solid fa-bowl-rice text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-display font-bold text-xl tracking-tight text-slate-900 block leading-none">khoizyy</span>
+                    <span class="text-[9px] text-khoizyy-700 tracking-wider font-extrabold uppercase">Ẩm Thực & Đặc Sản Huế</span>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                <a href="#hue-menu" class="hover:text-khoizyy-600 transition-colors">Món Ngon Huế</a>
+                <a href="#how-it-works" onclick="openInfoModal('howItWorks')" class="hover:text-khoizyy-600 transition-colors">Cách Tra Cứu</a>
+                <a href="#about" onclick="openInfoModal('about')" class="hover:text-khoizyy-600 transition-colors">Về Cố Đô</a>
+            </nav>
+
+            <!-- Watchlist Toggle -->
+            <div class="flex items-center gap-3 z-10">
+                <button onclick="toggleWatchlistDrawer()" class="relative flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/80 hover:bg-white border border-khoizyy-200 text-xs font-bold text-slate-800 shadow-sm transition-all hover:shadow-md active:scale-95">
+                    <i class="fa-solid fa-heart text-rose-500"></i>
+                    <span class="hidden sm:inline">Món Yêu Thích</span>
+                    <span id="watchlistCount" class="bg-khoizyy-600 text-white text-[11px] px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 md:px-12 pt-8 pb-16 flex-grow w-full relative z-10">
+        <!-- Hero Section -->
+        <section class="my-6 md:my-10">
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="tag-pill px-3 py-1 rounded-full flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            10 MÓN ĐẶC SẢN NỔI TIẾNG
+                        </span>
+                        <span class="tag-pill px-3 py-1 rounded-full">ẨM THỰC CỐ ĐÔ</span>
+                        <span class="tag-pill px-3 py-1 rounded-full">ĐỊA ĐIỂM ĂN NGON</span>
+                    </div>
+
+                    <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] font-display">
+                        Thưởng thức hương vị <br/>
+                        <span class="font-serifHeading italic font-normal text-khoizyy-700 underline decoration-khoizyy-300 decoration-wavy decoration-1">xứ Huế mộng mơ.</span>
+                    </h1>
+
+                    <p class="text-xs md:text-sm text-slate-600 font-medium max-w-lg leading-relaxed">
+                        Tra cứu nguyên liệu, lượng calo, mức độ cay đặc trưng và địa chỉ các quán ăn Huế nổi tiếng chuẩn vị cùng khoizyy.
+                    </p>
+                </div>
+
+                <!-- Hero Spotlight Card -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="w-full max-w-md rounded-3xl glass-card p-5 relative overflow-hidden flex flex-col justify-between border border-white/90 shadow-2xl">
+                        <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-khoizyy-300/30 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="flex justify-between items-start z-10">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-khoizyy-700 bg-khoizyy-100 px-2.5 py-1 rounded-lg">Đặc Sản Hàng Đầu</span>
+                                <h3 class="text-lg font-bold font-display text-slate-800 mt-1">Bún Bò Huế Chuẩn Vị</h3>
+                                <p class="text-xs text-slate-500">Chả phết • Giò heo • Nước dùng sả ớt</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center text-white font-extrabold text-xs shadow-md">
+                                4.9 ★
+                            </div>
+                        </div>
+
+                        <!-- Hero Dish Graphic -->
+                        <div class="my-3 z-10 flex justify-center items-center py-1">
+                            <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&auto=format&fit=crop&q=80" alt="Bún Bò Huế" class="w-full h-36 object-cover rounded-2xl shadow-lg border-2 border-white">
+                        </div>
+
+                        <div class="flex justify-between items-end z-10 pt-3 border-t border-slate-200/60">
+                            <div>
+                                <span class="text-[9px] text-slate-400 uppercase font-bold block">Địa chỉ gợi ý</span>
+                                <span class="text-xs font-bold text-khoizyy-800">14 Nguyễn Huệ, P. Vĩnh Ninh</span>
+                            </div>
+                            <span class="text-[11px] text-emerald-600 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg font-extrabold">45.000 ₫</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search & Filter Controls Panel -->
+        <section id="hue-menu" class="glass-panel rounded-3xl p-5 md:p-6 my-6 shadow-xl">
+            <div class="space-y-4">
+                <!-- Search Inputs Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5">
+                    <!-- Text Search Input -->
+                    <div class="md:col-span-5 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-khoizyy-400 text-sm"></i>
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Tìm tên món, địa chỉ, nguyên liệu (bún, bánh, tôm...)..." 
+                            class="w-full pl-11 pr-4 py-3 bg-white/85 border border-khoizyy-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-khoizyy-400 focus:bg-white transition-all font-medium text-slate-800 placeholder-slate-400">
+                    </div>
+
+                    <!-- Category Selector -->
+                    <div class="md:col-span-3">
+                        <select id="categoryFilter" onchange="applyFilters()" class="w-full px-4 py-3 bg-white/85 border border-khoizyy-200 rounded-2xl text-xs md:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-khoizyy-400 transition-all cursor-pointer">
+                            <option value="ALL">Tất cả danh mục Huế</option>
+                            <option value="MonNuoc">Món Nước & Bún</option>
+                            <option value="BanhHue">Bánh Dân Dã Huế</option>
+                            <option value="ComBunKho">Cơm & Bún Khô</option>
+                            <option value="CheAnVat">Chè & Ăn Vặt Huế</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Selector -->
+                    <div class="md:col-span-4">
+                        <select id="sortFilter" onchange="applyFilters()" class="w-full px-4 py-3 bg-white/85 border border-khoizyy-200 rounded-2xl text-xs md:text-sm font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-khoizyy-400 transition-all cursor-pointer">
+                            <option value="RATING_DESC">Đánh giá cao nhất</option>
+                            <option value="PRICE_ASC">Giá: Thấp đến Cao</option>
+                            <option value="PRICE_DESC">Giá: Cao đến Thấp</option>
+                            <option value="SPICE_ASC">Ít cay nhất</option>
+                            <option value="CAL_ASC">Lượng Calo ít nhất</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Price Slider Section -->
+                <div class="pt-3 border-t border-khoizyy-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="w-full sm:w-2/3 flex items-center gap-4">
+                        <span class="text-xs font-bold uppercase text-slate-500 whitespace-nowrap">MỨC GIÁ TỐI ĐA:</span>
+                        <input type="range" id="priceRange" min="10000" max="100000" step="5000" value="100000" oninput="updatePriceSliderLabel(); applyFilters();" class="flex-grow">
+                    </div>
+                    <div class="flex items-center justify-between w-full sm:w-auto gap-4">
+                        <span id="priceLabel" class="text-xs md:text-sm font-extrabold text-khoizyy-800 bg-khoizyy-100 px-3 py-1.5 rounded-xl">Lên đến 100.000đ</span>
+                        <button onclick="resetFilters()" class="text-xs text-slate-500 hover:text-khoizyy-700 font-bold underline underline-offset-4">Đặt lại</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Count Bar -->
+        <div class="flex items-center justify-between mb-6 px-2">
+            <h2 class="text-lg md:text-xl font-bold font-display text-slate-800 flex items-center gap-2">
+                <span>Danh Sách Đặc Sản Xứ Huế</span>
+            </h2>
+            <span id="foodCountBadge" class="text-xs font-bold text-khoizyy-700 bg-khoizyy-100 border border-khoizyy-200 px-3 py-1 rounded-full">
+                10 món / 10 tổng số
+            </span>
+        </div>
+
+        <!-- Food Grid -->
+        <div id="foodGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Rendered dynamically by JS -->
+        </div>
+
+        <!-- Empty State Fallback -->
+        <div id="emptyState" class="hidden py-16 text-center space-y-4">
+            <div class="w-16 h-16 bg-khoizyy-100 text-khoizyy-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-bowl-rice"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-800">Không tìm thấy món đặc sản Huế phù hợp</h3>
+            <p class="text-xs text-slate-500 max-w-xs mx-auto">Thử mở rộng khoảng giá slider hoặc đổi từ khóa tìm kiếm khác nhé.</p>
+            <button onclick="resetFilters()" class="px-5 py-2.5 bg-khoizyy-600 text-white rounded-2xl text-xs font-bold shadow-md hover:bg-khoizyy-700 transition-all">Đặt lại bộ lọc</button>
+        </div>
+    </main>
+
+    <!-- Floating Compare Dock -->
+    <div id="compareDock" class="fixed bottom-6 right-6 z-30 transition-all transform translate-y-28 opacity-0">
+        <button onclick="openCompareModal()" class="flex items-center gap-3 bg-gradient-to-r from-khoizyy-700 to-khoizyy-900 text-white px-6 py-3.5 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all border border-khoizyy-400/30">
+            <i class="fa-solid fa-code-compare text-khoizyy-300"></i>
+            <span class="font-bold text-xs md:text-sm tracking-wide">So sánh món Huế <span id="compareCount" class="bg-white/20 px-2 py-0.5 rounded-md ml-1">0/5</span></span>
+        </button>
+    </div>
+
+    <!-- Side-by-Side Comparison Modal -->
+    <div id="compareModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white/95 rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl border border-white overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-khoizyy-50/50">
+                <div>
+                    <h3 class="text-xl font-display font-bold text-slate-900">Bảng So Sánh Món Ngon Xứ Huế</h3>
+                    <p class="text-xs text-slate-500">So sánh giá, độ cay, calo và địa điểm nổi tiếng ở Huế</p>
+                </div>
+                <button onclick="closeCompareModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-x-auto overflow-y-auto flex-grow" id="compareModalBody">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Watchlist Favorites Drawer -->
+    <div id="watchlistDrawer" class="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white/95 backdrop-blur-xl shadow-2xl border-l border-khoizyy-100 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-khoizyy-50/50">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-heart text-rose-500 text-lg"></i>
+                <h3 class="text-lg font-bold font-display text-slate-800">Đặc Sản Đã Lưu</h3>
+            </div>
+            <button onclick="toggleWatchlistDrawer()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="watchlistContainer" class="p-6 space-y-3 flex-grow overflow-y-auto">
+            <!-- Favorites rendered here -->
+        </div>
+
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50">
+            <button onclick="clearWatchlist()" class="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-100 transition-all">
+                Xóa toàn bộ danh sách
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="infoModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+            <button onclick="closeInfoModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 id="infoModalTitle" class="text-lg font-bold font-display text-slate-800"></h3>
+            <div id="infoModalContent" class="text-xs text-slate-600 leading-relaxed space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-khoizyy-200/60 bg-white/40 backdrop-blur-md py-8 mt-12 text-xs text-slate-500 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md bg-khoizyy-600 text-white flex items-center justify-center font-bold text-[10px]">K</div>
+                <span class="font-bold text-slate-700">khoizyy</span>
+                <span>— Cẩm nang tra cứu ẩm thực Cố Đô Huế</span>
+            </div>
+            <p>© 2026 khoizyy Huế Cuisine. Tinh hoa ẩm thực xứ Huế.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Authentic Hue Specialties Dataset
+        const hueFoodData = [
+            {
+                id: 'bun-bo-hue',
+                name: 'Bún Bò Huế Chuẩn Vị',
+                category: 'MonNuoc',
+                categoryName: 'Món Nước & Bún',
+                price: 45000,
+                calories: 540,
+                spiceLevel: 'Cay vừa (Sả Ớt)',
+                spiceScore: 3,
+                prepTime: '15 phút',
+                location: '14 Nguyễn Huệ, P. Vĩnh Ninh, Huế',
+                ingredients: 'Thịt bò tái, nạm, giò heo, huyết, chả quết, mắm ruốc, sả',
+                rating: 4.9,
+                image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'banh-bot-loc',
+                name: 'Bánh Bột Lọc Lá Dong Huế',
+                category: 'BanhHue',
+                categoryName: 'Bánh Dân Dã Huế',
+                price: 30000,
+                calories: 310,
+                spiceLevel: 'Cay nhẹ (Nước mắm ớt)',
+                spiceScore: 2,
+                prepTime: '10 phút',
+                location: '109 Lê Huân, P. Thuận Hòa, Huế',
+                ingredients: 'Bột năng trong suốt, nhân tôm đất, thịt mỡ, bọc lá dong',
+                rating: 4.8,
+                image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'banh-beo-chen',
+                name: 'Bánh Bèo Chén Xứ Huế',
+                category: 'BanhHue',
+                categoryName: 'Bánh Dân Dã Huế',
+                price: 35000,
+                calories: 380,
+                spiceLevel: 'Ít cay',
+                spiceScore: 1,
+                prepTime: '12 phút',
+                location: '8 Nguyễn Bỉnh Khiêm, P. Phú Hiệp, Huế',
+                ingredients: 'Bột gạo hấp chén nhỏ, tôm chấy đỏ, mỡ hành, da heo chiên giòn',
+                rating: 4.9,
+                image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'banh-nam-hue',
+                name: 'Bánh Nậm Tôm Thịt Thanh Nhẹ',
+                category: 'BanhHue',
+                categoryName: 'Bánh Dân Dã Huế',
+                price: 25000,
+                calories: 280,
+                spiceLevel: 'Không cay',
+                spiceScore: 0,
+                prepTime: '10 phút',
+                location: '49 Tùng Thiện Vương, P. Vỹ Dạ, Huế',
+                ingredients: 'Bột gạo mỏng mềm, nhân tôm băm bơ giã nhuyễn, gói lá chuối',
+                rating: 4.7,
+                image: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'com-hen-hue',
+                name: 'Cơm Hến / Bún Hến Hoa Đông',
+                category: 'ComBunKho',
+                categoryName: 'Cơm & Bún Khô',
+                price: 20000,
+                calories: 420,
+                spiceLevel: 'Cay nhiều (Mắm ruốc)',
+                spiceScore: 4,
+                prepTime: '10 phút',
+                location: '64 Kiệt 7 Ưng Bình, Cồn Hến, Huế',
+                ingredients: 'Hến xào đậm đà, mắm ruốc Huế, bóng da chiên, hoa bắp chuối, đậu phụng',
+                rating: 4.8,
+                image: 'https://images.unsplash.com/photo-1580651315530-69c8e0026377?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'banh-ram-it',
+                name: 'Bánh Ram Ít Cố Đô',
+                category: 'BanhHue',
+                categoryName: 'Bánh Dân Dã Huế',
+                price: 35000,
+                calories: 450,
+                spiceLevel: 'Ít cay',
+                spiceScore: 1,
+                prepTime: '15 phút',
+                location: 'Quán Bà Đỏ - 8 Nguyễn Bỉnh Khiêm, Huế',
+                ingredients: 'Đáy bánh ram chiên giòn, phần bánh ít dẻo mịn nhân tôm thịt',
+                rating: 4.8,
+                image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'che-bot-loc-heo-quay',
+                name: 'Chè Bột Lọc Heo Quay Hẻm Huế',
+                category: 'CheAnVat',
+                categoryName: 'Chè & Ăn Vặt Huế',
+                price: 20000,
+                calories: 320,
+                spiceLevel: 'Ngọt mặn béo độc đáo',
+                spiceScore: 0,
+                prepTime: '5 phút',
+                location: '1 Hẻm 27 Hùng Vương, P. Phú Hội, Huế',
+                ingredients: 'Bột lọc bọc nhân thịt heo quay giòn, nước đường gừng thơm ngát',
+                rating: 4.9,
+                image: 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'banh-khoai-hue',
+                name: 'Bánh Khoái Đợt Nước Lèo',
+                category: 'BanhHue',
+                categoryName: 'Bánh Dân Dã Huế',
+                price: 40000,
+                calories: 590,
+                spiceLevel: 'Ít cay (Nước lèo gan)',
+                spiceScore: 1,
+                prepTime: '20 phút',
+                location: '110 Đinh Tiên Hoàng, P. Thuận Thành, Huế',
+                ingredients: 'Vỏ bánh chiên giòn đụm, tôm, thịt tẩm, giá đỗ, chấm nước lèo từ gan thịt',
+                rating: 4.7,
+                image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'bun-mam-nem-hue',
+                name: 'Bún Mắm Nêm Thịt Luộc Mệ Thẻo',
+                category: 'ComBunKho',
+                categoryName: 'Cơm & Bún Khô',
+                price: 35000,
+                calories: 490,
+                spiceLevel: 'Cay nồng (Mắm nêm ớt)',
+                spiceScore: 4,
+                prepTime: '10 phút',
+                location: '64 Bà Triệu, P. Phú Hội, Huế',
+                ingredients: 'Bún tươi, thịt heo quay/luộc, mắm nêm nguyên chất Huế, chả da, rau sống',
+                rating: 4.8,
+                image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=80'
+            },
+            {
+                id: 'tre-hue-nem-triu',
+                name: 'Tré Huế & Nem Trĩu Lá Đinh Lăng',
+                category: 'CheAnVat',
+                categoryName: 'Chè & Ăn Vặt Huế',
+                price: 50000,
+                calories: 360,
+                spiceLevel: 'Cay giòn thơm nồng',
+                spiceScore: 3,
+                prepTime: '5 phút',
+                location: 'Chợ Đông Ba, P. Phú Hòa, Huế',
+                ingredients: 'Thịt đầu heo, riềng, tỏi, thính gạo, gói lá rơm truyền thống',
+                rating: 4.6,
+                image: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=500&auto=format&fit=crop&q=80'
+            }
+        ];
+
+        let compareList = [];
+        let watchlist = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+            applyFilters();
+            loadWatchlistFromStorage();
+        });
+
+        // Floating Flower/Sparkle Particles Canvas
+        function initParticles() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = Array.from({ length: 35 }, () => ({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 2.5 + 1,
+                alpha: Math.random() * 0.4 + 0.15,
+                speedY: -(Math.random() * 0.35 + 0.1),
+                speedX: (Math.random() - 0.5) * 0.25
+            }));
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < 0) p.y = height;
+                    if (p.x < 0 || p.x > width) p.speedX *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(160, 98, 255, ${p.alpha})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function formatVND(val) {
+            return val.toLocaleString('vi-VN') + 'đ';
+        }
+
+        function updatePriceSliderLabel() {
+            const val = parseInt(document.getElementById('priceRange').value);
+            document.getElementById('priceLabel').innerText = `Lên đến ${formatVND(val)}`;
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const category = document.getElementById('categoryFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+            const maxPrice = parseInt(document.getElementById('priceRange').value);
+
+            let filtered = hueFoodData.filter(food => {
+                const matchesSearch = food.name.toLowerCase().includes(search) || 
+                                      food.location.toLowerCase().includes(search) ||
+                                      food.ingredients.toLowerCase().includes(search);
+                const matchesCategory = (category === 'ALL') || (food.category === category);
+                const matchesPrice = food.price <= maxPrice;
+
+                return matchesSearch && matchesCategory && matchesPrice;
+            });
+
+            filtered.sort((a, b) => {
+                if (sort === 'RATING_DESC') return b.rating - a.rating;
+                if (sort === 'PRICE_ASC') return a.price - b.price;
+                if (sort === 'PRICE_DESC') return b.price - a.price;
+                if (sort === 'SPICE_ASC') return a.spiceScore - b.spiceScore;
+                if (sort === 'CAL_ASC') return a.calories - b.calories;
+                return 0;
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(list) {
+            const grid = document.getElementById('foodGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countBadge = document.getElementById('foodCountBadge');
+
+            countBadge.innerText = `${list.length} món / ${hueFoodData.length} tổng số`;
+
+            if (list.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = list.map(food => {
+                const isCompared = compareList.includes(food.id);
+                const isSaved = watchlist.includes(food.id);
+
+                return `
+                    <div class="glass-card rounded-3xl p-5 flex flex-col justify-between relative group">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold text-khoizyy-700 tracking-wider uppercase bg-khoizyy-100 border border-khoizyy-200 px-2.5 py-0.5 rounded-full">
+                                ${food.categoryName}
+                            </span>
+                            <button onclick="toggleWatchlist('${food.id}')" class="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center text-slate-400 hover:text-rose-500 transition-all shadow-sm">
+                                <i class="${isSaved ? 'fa-solid text-rose-500' : 'fa-regular'} fa-heart text-xs"></i>
+                            </button>
+                        </div>
+
+                        <div class="my-2 flex justify-center items-center overflow-hidden rounded-2xl relative">
+                            <img src="${food.image}" alt="${food.name}" class="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute bottom-2 right-2 bg-slate-900/80 text-amber-300 text-[11px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-md">
+                                ★ ${food.rating}
+                            </span>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <h3 class="font-bold text-sm text-slate-800 line-clamp-1">${food.name}</h3>
+                            <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
+                                <span><i class="fa-solid fa-pepper-hot text-rose-500 mr-1"></i>${food.spiceLevel}</span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-fire text-orange-400 mr-1"></i>${food.calories} kcal</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 line-clamp-1"><i class="fa-solid fa-location-dot text-khoizyy-500 mr-1"></i>${food.location}</p>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between">
+                            <div>
+                                <span class="text-[9px] text-slate-400 uppercase font-bold block">Đơn giá gợi ý</span>
+                                <span class="text-sm font-extrabold text-khoizyy-800">${formatVND(food.price)}</span>
+                            </div>
+
+                            <button onclick="toggleCompare('${food.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${isCompared ? 'bg-khoizyy-600 text-white' : 'bg-khoizyy-100 text-khoizyy-800 hover:bg-khoizyy-200'}">
+                                <i class="fa-solid ${isCompared ? 'fa-check' : 'fa-plus'}"></i>
+                                <span>${isCompared ? 'Đã thêm' : 'So sánh'}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCompare(id) {
+            if (compareList.includes(id)) {
+                compareList = compareList.filter(item => item !== id);
+            } else {
+                if (compareList.length >= 5) {
+                    alert('Chỉ có thể so sánh tối đa 5 món ăn cùng lúc.');
+                    return;
+                }
+                compareList.push(id);
+            }
+
+            updateCompareDock();
+            applyFilters();
+        }
+
+        function updateCompareDock() {
+            const dock = document.getElementById('compareDock');
+            const count = document.getElementById('compareCount');
+            count.innerText = `${compareList.length}/5`;
+
+            if (compareList.length > 0) {
+                dock.classList.remove('translate-y-28', 'opacity-0');
+            } else {
+                dock.classList.add('translate-y-28', 'opacity-0');
+            }
+        }
+
+        function openCompareModal() {
+            if (compareList.length === 0) return;
+            const modal = document.getElementById('compareModal');
+            const body = document.getElementById('compareModalBody');
+            const selectedFoods = compareList.map(id => hueFoodData.find(g => g.id === id));
+
+            body.innerHTML = `
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="border-b border-slate-200">
+                            <th class="p-3 text-xs font-bold uppercase text-slate-400 w-36">Thông Số Đặc Sản</th>
+                            ${selectedFoods.map(f => `
+                                <th class="p-3 min-w-[170px]">
+                                    <div class="flex flex-col gap-1">
+                                        <span class="font-bold text-slate-800 text-xs">${f.name}</span>
+                                        <span class="text-xs text-khoizyy-700 font-extrabold">${formatVND(f.price)}</span>
+                                        <button onclick="toggleCompare('${f.id}'); openCompareModal();" class="text-[10px] text-rose-500 hover:underline text-left">Bỏ chọn</button>
+                                    </div>
+                                </th>
+                            `).join('')}
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-xs text-slate-700">
+                        <tr>
+                            <td class="p-3 font-bold text-slate-500">Danh Mục</td>
+                            ${selectedFoods.map(f => `<td class="p-3 font-semibold">${f.categoryName}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-slate-500">Mức Độ Cay</td>
+                            ${selectedFoods.map(f => `<td class="p-3 font-bold text-rose-600">${f.spiceLevel}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-slate-500">Calo (Năng Lượng)</td>
+                            ${selectedFoods.map(f => `<td class="p-3 font-semibold text-orange-600">${f.calories} kcal</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-slate-500">Địa Chỉ Nổi Tiếng Ở Huế</td>
+                            ${selectedFoods.map(f => `<td class="p-3 font-medium text-slate-600">${f.location}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <td class="p-3 font-bold text-slate-500">Nguyên Liệu Chính</td>
+                            ${selectedFoods.map(f => `<td class="p-3 font-medium text-slate-600">${f.ingredients}</td>`).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeCompareModal() {
+            const modal = document.getElementById('compareModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function toggleWatchlist(id) {
+            if (watchlist.includes(id)) {
+                watchlist = watchlist.filter(item => item !== id);
+            } else {
+                watchlist.push(id);
+            }
+            localStorage.setItem('khoizyy_hue_watchlist', JSON.stringify(watchlist));
+            updateWatchlistUI();
+            applyFilters();
+        }
+
+        function loadWatchlistFromStorage() {
+            const saved = localStorage.getItem('khoizyy_hue_watchlist');
+            if (saved) {
+                watchlist = JSON.parse(saved);
+            }
+            updateWatchlistUI();
+        }
+
+        function updateWatchlistUI() {
+            document.getElementById('watchlistCount').innerText = watchlist.length;
+            const container = document.getElementById('watchlistContainer');
+
+            if (watchlist.length === 0) {
+                container.innerHTML = `<p class="text-center text-xs text-slate-400 py-12">Chưa có món đặc sản Huế nào được lưu.</p>`;
+                return;
+            }
+
+            const items = watchlist.map(id => hueFoodData.find(g => g.id === id)).filter(Boolean);
+            container.innerHTML = items.map(food => `
+                <div class="flex items-center justify-between p-3 rounded-2xl border border-slate-100 bg-white shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <img src="${food.image}" class="w-10 h-10 object-cover rounded-lg">
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-800">${food.name}</h4>
+                            <span class="text-xs text-khoizyy-700 font-extrabold">${formatVND(food.price)}</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleWatchlist('${food.id}')" class="text-slate-400 hover:text-rose-500 p-2">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleWatchlistDrawer() {
+            document.getElementById('watchlistDrawer').classList.toggle('translate-x-full');
+        }
+
+        function clearWatchlist() {
+            watchlist = [];
+            localStorage.setItem('khoizyy_hue_watchlist', JSON.stringify(watchlist));
+            updateWatchlistUI();
+            applyFilters();
+        }
+
+        function openInfoModal(type) {
+            const modal = document.getElementById('infoModal');
+            const title = document.getElementById('infoModalTitle');
+            const content = document.getElementById('infoModalContent');
+
+            if (type === 'howItWorks') {
+                title.innerText = 'Cách Tra Cứu Tại khoizyy';
+                content.innerHTML = `
+                    <p>1. <strong>Lọc nhanh đặc sản:</strong> Tìm theo Bánh Huế, Bún Nước, Cơm Hến hoặc Chè Hẻm.</p>
+                    <p>2. <strong>So sánh chuẩn vị:</strong> Chọn 2–5 món để so sánh độ cay, calo và địa chỉ quán nổi tiếng nhất Huế.</p>
+                    <p>3. <strong>Sắp xếp thông minh:</strong> Lọc món ăn ít cay nhất cho người không ăn được cay, hoặc lọc theo giá rẻ nhất.</p>
+                `;
+            } else if (type === 'about') {
+                title.innerText = 'Về Cố Đô & khoizyy';
+                content.innerHTML = `
+                    <p>khoizyy là góc tra cứu ẩm thực mang phong cách mộng mơ dành riêng cho các tín đồ yêu thích vị đậm đà, cay nồng và tinh tế của các món ngon xứ Huế.</p>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = 'ALL';
+            document.getElementById('sortFilter').value = 'RATING_DESC';
+            document.getElementById('priceRange').value = 100000;
+            updatePriceSliderLabel();
+            applyFilters();
+        }
+    </script>
+</body>
+</html>
